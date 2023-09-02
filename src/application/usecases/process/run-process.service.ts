@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
 import { ApiGateway } from 'src/data/protocols/api/api-gateway.interface';
 import { ItemResult } from 'src/data/protocols/api/items-process-response.interface';
 import { IProcess } from 'src/data/protocols/api/process-response.interface';
@@ -9,6 +9,7 @@ import { InjectConnection } from '@nestjs/mongoose';
 import { DateUtilHelper } from 'src/utils/date-helper';
 
 export class RunProcessService {
+  private readonly logger = new Logger(RunProcessService.name);
   isExtracting = false;
 
   constructor(
@@ -25,6 +26,9 @@ export class RunProcessService {
       try {
         const existingProcesses = [];
         const { startDate, endDate } = DateUtilHelper.getNext30DaysRange();
+        this.logger.log(
+          `Iniciando a extração dos processos referente ao período ${startDate} - ${endDate}.`,
+        );
         let currentPage = 1;
         let pageCount = 1;
 
@@ -57,6 +61,7 @@ export class RunProcessService {
           await this.processRepository.remove(existingProcesses);
         }
       } catch (error) {
+        this.logger.error(error);
         throw error;
       } finally {
         this.isExtracting = false;
@@ -101,6 +106,7 @@ export class RunProcessService {
       }
       return allItens;
     } catch (error) {
+      this.logger.error(error);
       throw error;
     }
   }
@@ -136,6 +142,7 @@ export class RunProcessService {
       await session.commitTransaction();
     } catch (error) {
       await session.abortTransaction();
+      this.logger.error(error);
       throw error;
     } finally {
       session.endSession();

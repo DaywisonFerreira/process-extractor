@@ -1,4 +1,12 @@
-import { Controller, Get, Inject, Post, Query, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Inject,
+  Logger,
+  Post,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RunProcessService } from 'src/application/usecases/process/run-process.service';
 import { NestjsEventEmitter } from 'src/infra/providers/nestjs-event-emitter';
@@ -10,6 +18,8 @@ import { GetAllProcessService } from 'src/application/usecases/process/get-all-p
 @Controller()
 @ApiTags('Process')
 export class ProcessController {
+  private readonly logger = new Logger(ProcessController.name);
+
   constructor(
     @Inject('EventProvider')
     private readonly eventEmitter: NestjsEventEmitter,
@@ -25,6 +35,7 @@ export class ProcessController {
     @Query() filterPaginateDto: FilterPaginateProcessDto,
   ): Promise<PaginateProcessDto> {
     try {
+      this.logger.log('Listando os processos');
       const { pageNumber, pageSize } = filterPaginateDto;
 
       const currentPage = Number(pageNumber) || 0;
@@ -37,6 +48,7 @@ export class ProcessController {
       });
       return new PaginateProcessDto(resultQuery, count, currentPage, perPage);
     } catch (error) {
+      this.logger.error(error);
       throw error;
     }
   }
