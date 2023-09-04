@@ -1,5 +1,5 @@
 # Sobre
-Este é um projeto para criar um sistema de extração automática de processos e itens licitatórios, o sistema extrai os processos quatro vezes por dia nos horários:
+Este é um projeto para criar um sistema de extração automática de processos e itens licitatórios, o sistema extrai os processos quatro vezes por dia nos horários abaixo e salva as licitações no banco de dados MongoDB.
 - 00:00h
 - 06:00h
 - 12:00h
